@@ -20,6 +20,33 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
+      initContainers:
+      - name: zim-download
+        image: busybox:latest
+        env:
+        - name: ZIM_LINK
+          value: "https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_maxi_2026-02.zim"
+        command:
+          - sh
+          - -c
+          - |
+            cd /data
+            IFS=','
+            for link in $ZIM_LINK; do
+              link=$(echo "$link" | xargs)
+              filename=$(basename "$link")
+              if [ ! -f "/data/$filename" ]; then
+                echo "Downloading $filename..."
+                wget -O "/data/$filename" "$link"
+                echo "Download complete: $filename"
+              else
+                echo "File already exists, skipping: $filename"
+              fi
+            done
+            echo "All downloads complete!"
+        volumeMounts:
+        - name: kiwix-data
+          mountPath: /data
       containers:
       - name: kiwix
         image: ghcr.io/kiwix/kiwix-serve:latest
