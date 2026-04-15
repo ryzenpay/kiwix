@@ -24,8 +24,6 @@ spec:
       - name: kiwix
         image: ghcr.io/kiwix/kiwix-serve:latest
         args:
-          - "--port=8080"
-          - "--verbose"
           - "/data/*.zim"
         ports:
         - containerPort: 8080
