@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kiwix-data
+  namespace: kiwix
+  labels:
+    app: kiwix-data
+spec:
+  storageClassName: retain
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+      storageClass: media

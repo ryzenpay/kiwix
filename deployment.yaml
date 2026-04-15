@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kiwix
+  namespace: kiwix
+  labels:
+    app: kiwix
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kiwix
+  template:
+    metadata:
+      labels:
+        app: kiwix
+    spec:
+      containers:
+      - name: kiwix
+        image: ghcr.io/kiwix/kiwix-serve:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: kiwix-data
+          mountPath: /data
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 30
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3
+      volumes:
+      - name: kiwix-data
+        persistentVolumeClaim:
+          claimName: kiwix-data
